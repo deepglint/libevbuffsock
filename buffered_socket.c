@@ -1,3 +1,16 @@
+/*
+callbacks for the socketBuffer
+
+connect_callback
+close_callback
+read_callback
+write_callback
+error_callback
+read_bytes_callback
+
+*/
+
+
 #include "evbuffsock.h"
 
 #ifdef DEBUG

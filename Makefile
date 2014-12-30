@@ -4,7 +4,7 @@ LIBDIR=${PREFIX}/lib
 INCDIR=${PREFIX}/include
 
 CFLAGS+=-g -Wall -O2 -DDEBUG -fPIC
-LIBS=-lev
+LIBS=/usr/local/lib/libev.a
 AR=ar
 AR_FLAGS=rc
 RANLIB=ranlib
@@ -14,14 +14,14 @@ all: libevbuffsock
 libevbuffsock: libevbuffsock.a test
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS)  -I ${INCDIR}
 
 libevbuffsock.a: buffered_socket.o buffer.o
 	$(AR) $(AR_FLAGS) $@ $^
 	$(RANLIB) $@
 
 test: test.o libevbuffsock.a
-	$(CC) -o $@ $^ $(LIBS)
+	$(CC) -o $@ $^ $(LIBS) -I ${INCDIR}
 
 clean:
 	rm -rf libbuffsock.a test *.o
