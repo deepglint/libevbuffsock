@@ -273,7 +273,10 @@ static void buffered_socket_read_cb(EV_P_ struct ev_io *w, int revents)
             return;
         }
         goto error;
-    } else if (res == 0) {
+    } 
+    else if (res == 0) {
+        
+        printf("error for reading 0\n");
         goto error;
     }
     
