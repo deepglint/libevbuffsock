@@ -1,5 +1,5 @@
 #include "evbuffsock.h"
-
+#include "errno.h"
 #ifdef DEBUG
 #define _DEBUG(...) fprintf(stdout, __VA_ARGS__)
 #else
@@ -23,17 +23,19 @@ struct Buffer *new_buffer(size_t length, size_t capacity)
 void free_buffer(struct Buffer *buf)
 {
     if (buf) {
-        free(buf->orig);
+        free(buf->orig); //free the original memory buffer
         free(buf);
     }
 }
 
+//reset the buf->data as buf->orig
 void buffer_reset(struct Buffer *buf)
 {
     buf->data = buf->orig;
     buf->offset = 0;
 }
 
+//
 int buffer_expand(struct Buffer *buf, size_t need)
 {
     size_t pos = buf->data - buf->orig;
@@ -104,6 +106,7 @@ int buffer_read_fd(struct Buffer *buf, int fd)
     int need;
     
     if (ioctl(fd, FIONREAD, &n) == -1 || n > 4096) {
+        printf("%s\n", strerror(errno));
         n = 4096;
     }
     

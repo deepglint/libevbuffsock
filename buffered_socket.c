@@ -37,8 +37,8 @@ struct BufferedSocket *new_buffered_socket(struct ev_loop *loop, const char *add
     buffsock = malloc(sizeof(struct BufferedSocket));
     buffsock->address = strdup(address);
     buffsock->port = port;
-    buffsock->read_buf = new_buffer(1024 * 16, 1024 * 16);
-    buffsock->write_buf = new_buffer(1024 * 16, 1024 * 16);
+    buffsock->read_buf = new_buffer(1024 * 16, 1024 * 1024*16);
+    buffsock->write_buf = new_buffer(1024 * 16, 1024 * 1024*16);
     buffsock->fd = -1;
     buffsock->state = BS_INIT;
     buffsock->connect_callback = connect_callback;
@@ -254,7 +254,7 @@ void buffered_socket_read_bytes(struct BufferedSocket *buffsock, size_t n,
     buffsock->read_bytes_callback = data_callback;
     buffsock->read_bytes_arg = arg;
     buffsock->read_bytes_n = n;
-    
+    printf("in the function here4\n");
     if (BUFFER_HAS_DATA(buffsock->read_buf) >= n) {
         ev_timer_start(buffsock->loop, &buffsock->read_bytes_timer_ev);
     }
@@ -269,6 +269,7 @@ static void buffered_socket_read_cb(EV_P_ struct ev_io *w, int revents)
     _DEBUG("%s: %d bytes read\n", __FUNCTION__, res);
     
     if (res == -1) {
+        //means the capacity is less than data length
         if (errno == EAGAIN || errno == EINTR) {
             return;
         }
@@ -282,13 +283,16 @@ static void buffered_socket_read_cb(EV_P_ struct ev_io *w, int revents)
     
     // client's responsibility to drain the buffer
     if (buffsock->read_callback) {
+        _DEBUG("here1\n");
         (*buffsock->read_callback)(buffsock, buffsock->read_buf, buffsock->cbarg);
     }
-    
-    if (buffsock->read_bytes_n && (BUFFER_HAS_DATA(buffsock->read_buf) >= buffsock->read_bytes_n)) {
+    _DEBUG("buffer data:%ld\n",BUFFER_HAS_DATA(buffsock->read_buf));
+    _DEBUG("read bytes n:%ld\n",buffsock->read_bytes_n);
+    if (buffsock->read_bytes_n&&(BUFFER_HAS_DATA(buffsock->read_buf) >= buffsock->read_bytes_n)) {
+        _DEBUG("here2\n");
         ev_timer_start(buffsock->loop, &buffsock->read_bytes_timer_ev);
     }
-    
+    _DEBUG("here3\n");
     return;
 
 error:

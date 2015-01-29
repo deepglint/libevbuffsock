@@ -22,7 +22,7 @@
 
 struct Buffer {
     char *data;
-    char *orig;
+    char *orig;//original memory buffer
     size_t offset;
     size_t length;
     size_t capacity;
