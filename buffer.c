@@ -60,6 +60,7 @@ int buffer_expand(struct Buffer *buf, size_t need)
     _DEBUG("%s: expanding by %lu\n", __FUNCTION__, expand);
     
     new_size = buf->length + expand;
+    _DEBUG("%d,is the new size ,%d is the capacity",new_size,buf->capacity);
     if (buf->capacity > 0 && new_size > buf->capacity) {
         return 0;
     }
